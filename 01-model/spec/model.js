@@ -19,7 +19,12 @@ describe('Model', () => {
     });
 
     it('should have a different uuid for each instance', () => {
-      const models = new Array(20).map(() => new Model());
+      const models = [];
+
+      for (let i = 0; i < 20; i++) {
+        models.push(new Model());
+      }
+
       const uuids = new Set(models.map((model) => model.uuid));
 
       expect(models.length).toBe(uuids.size);
@@ -47,7 +52,7 @@ describe('Model', () => {
 
     it('should set the attribute when using `set`', () => {
       model.set('name', 'Name');
-      expect(model.get('name')).toBe(name);
+      expect(model.get('name')).toBe('Name');
     });
 
     it('should allow use of existing method/property names as attributes', () => {
@@ -86,8 +91,8 @@ describe('Model', () => {
     it('should not override existing methods', () => {
       const otherModel = new Model({get: true});
 
-      expect(typeof model.get === 'function').toBeTruthy();
-      expect(model.get('get')).toBe(true);
+      expect(typeof otherModel.get === 'function').toBeTruthy();
+      expect(otherModel.get('get')).toBe(true);
     });
   });
 
@@ -120,7 +125,7 @@ describe('Model', () => {
 
       model.set('name', 'name');
 
-      expect(callback).toHaveBeenCalledOnce();
+      expect(callback).toHaveBeenCalled();
     });
 
     it('should emit the change:{{propName}} event when a property changes', () => {
@@ -130,7 +135,7 @@ describe('Model', () => {
 
       model.set('name', 'name');
 
-      expect(callback).toHaveBeenCalledOnce();
+      expect(callback).toHaveBeenCalled();
     });
 
     it('should allow the same callback to be added twice', () => {
@@ -140,8 +145,7 @@ describe('Model', () => {
       expect(callback).not.toHaveBeenCalled();
 
       model.set('name', 'name');
-
-      expect(callback).toHaveBeenCalledTimes(2);
+      expect(callback.calls.count()).toBe(2);
     });
 
     it('should remove listeners with off', () => {
@@ -155,7 +159,7 @@ describe('Model', () => {
 
       model.set('name', 'name');
 
-      expect(callback).toHaveBeenCalledOnce();
+      expect(callback).toHaveBeenCalled();
       expect(otherCallback).not.toHaveBeenCalled();
     });
 
@@ -166,7 +170,7 @@ describe('Model', () => {
 
       model.trigger('custom');
 
-      expect(callback).toHaveBeenCalledOnce();
+      expect(callback).toHaveBeenCalled();
     });
 
     it('should pass parameters given to trigger to handlers', () => {
