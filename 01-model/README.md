@@ -100,11 +100,17 @@ class Dog extends Model {
     super(options);
 
     this.set('isDog', true);
+    this.set('isAlive', true);
   }
 
   speak() {
     const name = this.get('name');
-    console.log(`Woof woof, my name is ${name}`);
+
+    if (this.get('isAlive')) {
+      console.log(`Woof woof, my name is ${name}`);
+    } else {
+      console.log('*crickets*');
+    }
   }
 }
 
