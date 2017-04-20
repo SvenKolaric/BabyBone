@@ -40,6 +40,9 @@ copy assign all the key-value pairs of that object as its own attributes. At thi
 these attributes should be gettable. The existing model properties and methods (such as `get` and `set`)
 **must not** be overwritten by the properties.
 
+Additionally, a shallow copy should be made of the passed object. If the object is modified after
+initialisation, it should not alter the values in the model.
+
 ```javascript
 const values = {
   name: 'Tester',
@@ -52,7 +55,11 @@ model.get('name') === values.name; // true
 model.get('set') === values.set; // true
 
 model.set('name', 'User');
-mode.get('name') === 'User'; // true
+model.get('name') === 'User'; // true
+
+values.name = 'Mark';
+
+model.get('name') === 'User'; // true
 ```
 
 ### Events
@@ -121,3 +128,6 @@ dog.speak(); // Woof woof, my name is Lassie
 ```
 
 ## References
+  * [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier)
+  * [MDN ES6 classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
+  * [MDN Object#assign](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)

@@ -80,12 +80,18 @@ describe('Model', () => {
       model = new Model(options);
     });
 
-    it('should copy initial values to the object if provided', () => {
+    it('should use initial values for the model if provided', () => {
       Object.keys(options).forEach((key) => {
         const value = options[key];
 
         expect(model.get(key)).toBe(value);
       });
+    });
+
+    it('should make a (shallow) copy of the initial values', () => {
+      options.name = 'Sefo';
+
+      expect(model.get('name')).toBe('Andrei');
     });
 
     it('should not override existing methods', () => {
