@@ -1,4 +1,4 @@
-# CRUD
+# CRUD methods
 
 While the currently implemented `Model` and `Collection` classes certainly have their uses,
 we have no good way of persisting them. In this task, you will implement the basic CRUD methods on
@@ -125,13 +125,19 @@ const people2 = new People([
 ### Fetching models
 
 To begin with, you will need to implement the `Model#fetch` method, which will allow you to
-get a specific instance of a model from the server. This method takes only one mandatory parameter - the
-value of the identifier used on the server. It will also make use of the `id` and `url` properties
-describe in the previous sections.
+get a specific instance of a model from the server. The method takes one mandatory parameter
+and two optional parameters. The first, mandatory, parameter is the identifier (id) used on
+the server. The second parameter are the query parameters, as a key-value object store. The
+third parameter are the headers, in the same format.
+
+It will also make use of the `id` and `url` properties described in the previous sections.
+The method should then make a GET request using the resolved URL, and assign the returned values
+to the model.
+
+When this method is successfully executed, a `load` event should be emitted.
 
 This method **must** return a promise, which resolves with the response when the data is fetched, or
 rejects with an error when a HTTP error occurs.
-
 
 For example, we wish to fetch the chicken identified by an `id` of value `35`:
 
@@ -148,8 +154,10 @@ class Chicken extends Model {
 
 const chicken = new Chicken();
 
+// GET https://my-farm.com/chickens/13?include=eggs
+// Sends 'Authentication: Basic 123' header
 chicken
-  .fetch(13)
+  .fetch(13, {include: 'eggs'}, {Authentication: 'Basic 123'})
   .then((response) => {
     console.log('Loaded chicken:', response);
   })
@@ -160,8 +168,127 @@ chicken
 
 ### Saving models
 
+We must also be capable of persisting models on the server. This will be implemented
+via the `Model#save` method. The method should take one optional parameter - the headers as
+a key-value object. It behaves differently depending on whether the model instance has a value
+for its defined id field (that is, if its identifier field is `id`, it checks whether
+`model.get('id')` is a defined value). If the value is not defined, a POST request is made.
+If it is defined, a PUT request is made instead.
+
+When a model is saved and the server returns a response body, the model should be updated
+with these fields. For example, if the model is saved via POST, and the server returns the `id`
+field, the model should be updated with it.
+
+When this method is successfully executed, a `save` event should be emitted.
+
+This method **must** return a promise, which resolves with the response when the data is fetched, or
+rejects with an error when a HTTP error occurs.
+
+For example:
+
+```javascript
+const jakov = new Chicken({
+  name: 'Jakov',
+  powerLevel: 7500,
+  finalForm: false
+});
+
+// Jakov has no id when saving, POST https://my-farm.com/chickens
+// Sends header 'Authentication: Basic 123'
+jakov
+  .save({Authentication: 'Basic 123'})
+  .then((response) => {
+    console.log('Saved Jakov', response);
+
+    // Jakov now has an id, since it was returned by the server.
+    // We will assume this id is 100
+    jakov.set('powerLevel', 100000);
+    jakov.set('finalForm', true);
+
+    // Jakov has an id, PUT https://my-farm.com/chickens/100
+    return jakov.save();
+  })
+  .then((response) => {
+    console.log('Saved even more powerful Jakov', response);
+  })
+  .catch((err) => {
+    console.error('Could not save Jakov!', err);
+  });
+```
+
 ### Deleting models
 
+Finally, models can be deleted, thus removing them from the server. You will implement this
+behaviour via the `Model#destroy` method. It should make a DELETE request to the URL, using
+the model's identifier field. The method optionally takes headers a key-value object.
+
+When this method is successfully executed, a `destroy` event should be emitted.
+
+This method **must** return a promise, which resolves with the response when the data is deleted, or
+rejects with an error when a HTTP error occurs.
+
+Additionally, `Collection` should listen to the `destroy` event on all of its instances. When it
+receives that event from one of its members, it should automatically remove it from its internal
+list of models.
+
+For example:
+
+```javascript
+class Dog extends Model {
+  get url() {
+    return 'https://my-farm.com/dogs/:id';
+  }
+}
+
+const dog = new Dog();
+const dogs = new DogCollection([dog]);
+
+dog
+  .get(10)
+  .then(() => {
+    console.log(dogs.models.length === 1); // logs true
+
+    // DELETE https://my-farm.com/dogs/10
+    // Sends header 'Authentication: Basic 123'
+    return dog.delete({
+      Authentication: 'Basic 123'
+    });
+  })
+  .then((response) => {
+    console.log('Deleted the dog');
+    console.log(dogs.models.length === 0); // logs false
+  })
+  .catch((err) => {
+    console.err('Failed to process the dog', err);
+  });
+```
+
 ### Fetching collections
+
+The remaining common use case is fetching entire collections of data at once. To allow
+for this behaviour, implement the `Collection#fetch` method. It should take two optional
+parameters: the query parameters and the headers, both as objects.
+
+When this method is successfully executed, a `load` event should be emitted.
+
+This method **must** return a promise, which resolves with the response when the data is fetched, or
+rejects with an error when a HTTP error occurs.
+
+For example:
+
+```javascript
+const chickens = new ChickenCollection();
+
+// GET https://my-farm.com/chickens?sort=head_size
+// Sends header 'Authentication: Basic 123'
+chickens
+  .fetch({sort: 'head_size'}, {Authentication: 'Basic 123'})
+  .then((response) => {
+    console.log('Chickens loaded!', response);
+  })
+  .catch((err) => {
+    console.error('Don\'t count your chickens before they hatch', err);
+  });
+```
 
 ## References
