@@ -94,13 +94,15 @@ typeof noModel === 'undefined'; // true
 ### Array methods
 
 Unlike the basic JavaScript array, our `Collection` does not yet support the basic (and very useful)
-array methods. To remedy this, you should implement the following methods on the `Collection` class:
+array methods. To remedy this, you should implement the following properties and methods on the
+`Collection` class:
 
+  - `length` - Read-only property that returns the number of models in the collection
   - `map` - Takes a function and applies it to every model in the collection, returning the same class (`Collection` or extending class) with the transformed values. The function is passed, in order, the model, index, and list of models, much like `Array#map`
   - `filter` - Takes a predicate function and applies it to every collection, returning the same collection class containing only the models for which the return value of the function was *truthy*. The function is passed the model, index, and array of models, like `Array#filter`.
   - `reduce` - Takes a function that accumulates the values and returns the accumulated value, as well as an initial value. The function is run on all methods in order, and passed the current accumulator value, current model, index, and array of models, much like `Array#reduce`.
   - `find` - Takes a predicate function and iterates it over the models, returning the first one for which the function evaluates to a truthy value. If no value is found, `undefined` is returned. The predicate function is passed the model, index, and array of models, much like `Array#find`.
-  - `findIndex` - Behaves like `Collection#find`, but returns the index of the first match (or `undefined` if there is no match).
+  - `findIndex` - Behaves like `Collection#find`, but returns the index of the first match (or `-1` if there is no match).
   - `indexOf` - Takes a model, and returns the first index at which this model occurs in the collection. If it does not appear, `-1` is returned instead. Behaves like `Array#indexOf`.
 
 These methods should allow for handling of most use cases, and to use collections like arrays without loss of flexibility.
