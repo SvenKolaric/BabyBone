@@ -292,3 +292,5 @@ chickens
 ```
 
 ## References
+  * [MDN Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise)
+  * [MDN Regular Expressions](https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions)
