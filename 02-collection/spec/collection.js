@@ -129,9 +129,9 @@ describe('Collection', () => {
         expect(callback.calls.count()).toBe(4);
 
         [0, 1, 2, 3].forEach((index) => {
-          expect(callback.calls[0][0]).toBe(array[index]);
-          expect(callback.calls[0][1]).toBe(index);
-          expect(callback.calls[0][2]).toBe(array);
+          expect(callback.calls[index][0]).toBe(array[index]);
+          expect(callback.calls[index][1]).toBe(index);
+          expect(callback.calls[index][2]).toBe(array);
         });
       });
 
@@ -158,9 +158,9 @@ describe('Collection', () => {
         expect(callback.calls.count()).toBe(4);
 
         [0, 1, 2, 3].forEach((index) => {
-          expect(callback.calls[0][0]).toBe(array[index]);
-          expect(callback.calls[0][1]).toBe(index);
-          expect(callback.calls[0][2]).toBe(array);
+          expect(callback.calls[index][0]).toBe(array[index]);
+          expect(callback.calls[index][1]).toBe(index);
+          expect(callback.calls[index][2]).toBe(array);
         });
       });
 
@@ -175,6 +175,109 @@ describe('Collection', () => {
 
         const result = collection.filter(cb);
         expect(result.models).toEqual(array.filter(cb));
+      });
+    });
+
+    describe('reduce', () => {
+      it('should call the callback on each element with the accumulator, value, index and models array', () => {
+        const callback = jasmine.createSpy('callback');
+        const initial = 0;
+        collection.reduce(callback, initial);
+
+        expect(callback.calls.count()).toBe(4);
+
+        [0, 1, 2, 3].forEach((index) => {
+          expect(callback.calls[index][0]).toBe(index === 0 ? initial : undefined);
+          expect(callback.calls[index][1]).toBe(array[index]);
+          expect(callback.calls[index][2]).toBe(index);
+          expect(callback.calls[index][3]).toBe(array);
+        });
+      });
+
+      it('should return the computed value', () => {
+        const callback = (acc, value) => acc + value;
+        const result = collection.reduce(callback, 1);
+
+        expect(result).toBe(collection.models.reduce(callback, 1));
+      });
+
+      it('should not use the accumulator if not provided', () => {
+        const callback = (acc, value) => acc + value;
+        const result = collection.reduce(callback);
+
+        expect(result).toBe(collection.models.reduce(callback));
+      });
+    });
+
+    describe('find', () => {
+      it('should call the callback on each element with the value, index and models array', () => {
+        const callback = jasmine.createSpy('callback');
+
+        collection.find(callback);
+
+        expect(callback.calls.count()).toBe(4);
+
+        [0, 1, 2, 3].forEach((index) => {
+          expect(callback.calls[index][0]).toBe(array[index]);
+          expect(callback.calls[index][1]).toBe(index);
+          expect(callback.calls[index][2]).toBe(array);
+        });
+      });
+
+      it('should return the first value that matches the query', () => {
+        const cb = (value, index) => index === 2;
+        const result = collection.find(cb);
+
+        expect(result).toBe(array[2]);
+      });
+
+      it('should return `undefined` if there is no matching value', () => {
+        const cb = (value, index) => index === -1;
+        const result = collection.find(cb);
+
+        expect(result).not.toBeDefined();
+      });
+    });
+
+    describe('findIndex', () => {
+      it('should call the callback on each element with the value, index and models array', () => {
+        const callback = jasmine.createSpy('callback');
+
+        collection.findIndex(callback);
+
+        expect(callback.calls.count()).toBe(4);
+
+        [0, 1, 2, 3].forEach((index) => {
+          expect(callback.calls[index][0]).toBe(array[index]);
+          expect(callback.calls[index][1]).toBe(index);
+          expect(callback.calls[index][2]).toBe(array);
+        });
+      });
+
+      it('should return the index of first value that matches the query', () => {
+        const cb = (value, index) => index === 2;
+        const result = collection.findIndex(cb);
+
+        expect(result).toBe(2);
+      });
+
+      it('should return `-1` if there is no matching value', () => {
+        const cb = (value, index) => index === -20;
+        const result = collection.findIndex(cb);
+
+        expect(result).toBe(-1);
+      });
+    });
+
+    describe('indexOf', () => {
+      it('should return the index of the model in the collection', () => {
+        for (let i = 0; i < array.length; i++) {
+          expect(collection.indexOf(array[i])).toBe(i);
+        }
+      });
+
+      it('should return -1 if there is no such model in the collection', () => {
+        expect(collection.indexOf('notHere')).toBe(-1);
       });
     });
   });
