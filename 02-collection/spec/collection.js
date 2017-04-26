@@ -44,7 +44,6 @@ describe('Collection', () => {
       const fakeModel = {};
 
       expect(collection.models.length).toBe(0);
-
       collection.add(fakeModel);
 
       expect(collection.models.length).toBe(1);
@@ -54,7 +53,7 @@ describe('Collection', () => {
     it('should support adding of multiple models with `add`', () => {
       collection.add({}, {}, {});
 
-      expect(collection.models.length).toBe(0);
+      expect(collection.models.length).toBe(3);
     });
 
     it('should remove models with the `remove` method', () => {
@@ -129,9 +128,10 @@ describe('Collection', () => {
         expect(callback.calls.count()).toBe(4);
 
         [0, 1, 2, 3].forEach((index) => {
-          expect(callback.calls[index][0]).toBe(array[index]);
-          expect(callback.calls[index][1]).toBe(index);
-          expect(callback.calls[index][2]).toBe(array);
+          console.log(callback.calls);
+          expect(callback.calls.argsFor(index)[0]).toBe(array[index]);
+          expect(callback.calls.argsFor(index)[1]).toBe(index);
+          expect(callback.calls.argsFor(index)[2]).toBe(array);
         });
       });
 
@@ -158,9 +158,9 @@ describe('Collection', () => {
         expect(callback.calls.count()).toBe(4);
 
         [0, 1, 2, 3].forEach((index) => {
-          expect(callback.calls[index][0]).toBe(array[index]);
-          expect(callback.calls[index][1]).toBe(index);
-          expect(callback.calls[index][2]).toBe(array);
+          expect(callback.calls.argsFor(index)[0]).toBe(array[index]);
+          expect(callback.calls.argsFor(index)[1]).toBe(index);
+          expect(callback.calls.argsFor(index)[2]).toBe(array);
         });
       });
 
@@ -180,17 +180,15 @@ describe('Collection', () => {
 
     describe('reduce', () => {
       it('should call the callback on each element with the accumulator, value, index and models array', () => {
-        const callback = jasmine.createSpy('callback');
-        const initial = 0;
-        collection.reduce(callback, initial);
+        const callback = jasmine.createSpy('callback2');
+        collection.reduce(callback, 2);
 
         expect(callback.calls.count()).toBe(4);
 
         [0, 1, 2, 3].forEach((index) => {
-          expect(callback.calls[index][0]).toBe(index === 0 ? initial : undefined);
-          expect(callback.calls[index][1]).toBe(array[index]);
-          expect(callback.calls[index][2]).toBe(index);
-          expect(callback.calls[index][3]).toBe(array);
+          expect(callback.calls.argsFor(index)[1]).toBe(array[index]);
+          expect(callback.calls.argsFor(index)[2]).toBe(index);
+          expect(callback.calls.argsFor(index)[3]).toBe(array);
         });
       });
 
@@ -218,9 +216,9 @@ describe('Collection', () => {
         expect(callback.calls.count()).toBe(4);
 
         [0, 1, 2, 3].forEach((index) => {
-          expect(callback.calls[index][0]).toBe(array[index]);
-          expect(callback.calls[index][1]).toBe(index);
-          expect(callback.calls[index][2]).toBe(array);
+          expect(callback.calls.argsFor(index)[0]).toBe(array[index]);
+          expect(callback.calls.argsFor(index)[1]).toBe(index);
+          expect(callback.calls.argsFor(index)[2]).toBe(array);
         });
       });
 
@@ -248,9 +246,9 @@ describe('Collection', () => {
         expect(callback.calls.count()).toBe(4);
 
         [0, 1, 2, 3].forEach((index) => {
-          expect(callback.calls[index][0]).toBe(array[index]);
-          expect(callback.calls[index][1]).toBe(index);
-          expect(callback.calls[index][2]).toBe(array);
+          expect(callback.calls.argsFor(index)[0]).toBe(array[index]);
+          expect(callback.calls.argsFor(index)[1]).toBe(index);
+          expect(callback.calls.argsFor(index)[2]).toBe(array);
         });
       });
 
