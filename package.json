@@ -1,7 +1,8 @@
 {
   "scripts": {
     "test": "karma start karma.conf.js",
-    "test:ci": "NODE_ENV=ci karma start karma.conf.js"
+    "test:ci": "NODE_ENV=ci karma start karma.conf.js",
+    "lint": "eslint --ext .ts ./"
   },
   "dependencies": {
     "jasmine-core": "^2.6.1",
@@ -9,6 +10,15 @@
     "karma-chrome-launcher": "^2.0.0",
     "karma-cli": "^1.0.1",
     "karma-jasmine": "^1.1.0",
+    "eslint-config-airbnb-base": "^14.1.0",
     "typescript": "^3.9.7"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.34.0",
+    "eslint": "^7.1.0",
+    "eslint-config-airbnb-typescript": "^8.0.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.20.0"
   }
 }
